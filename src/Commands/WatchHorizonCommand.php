@@ -31,7 +31,11 @@ class WatchHorizonCommand extends Command
     {
         $this->horizonProcess = Process::fromShellCommandline(config('horizon-watcher.command'));
 
-        $this->horizonProcess->setTty(true)->setTimeout(null);
+        if ('\\' !== DIRECTORY_SEPARATOR && file_exists('/dev/tty') && is_readable('/dev/tty')) {
+            $this->horizonProcess->setTty(true);
+        }
+
+        $this->horizonProcess->setTimeout(null);
 
         $this->horizonProcess->start(fn ($type, $output) => $this->info($output));
 
